@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A note for Jack — Brian Larson</title>
+<meta name="description" content="A temporary preview while the full portfolio is under construction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A09;
+    --bg-2: #131311;
+    --ink: #F2EEE5;
+    --ink-soft: rgba(242, 238, 229, 0.55);
+    --rule: rgba(242, 238, 229, 0.16);
+    --link: #F2EEE5;
+    --link-hover: #2E5BFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Geist", "Helvetica Neue", Arial, sans-serif;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  body { min-height: 100vh; position: relative; }
+
+  /* Subtle film grain so the black isn't flat */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.6;
+    mix-blend-mode: screen;
+  }
+
+  /* ---------- Custom cursor: long-shaft 1000%-style arrow ---------- */
+  html, body, a { cursor: none; }
+  #cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 56px;
+    height: 56px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-200px, -200px);
+    /* Scale (and any other transforms) pivot from the arrow tip,
+       not the box center — so the tip stays planted on the mouse
+       when the cursor scales up over a link. */
+    transform-origin: 10px 10px;
+    color: var(--ink);
+    opacity: 0;
+    transition: opacity 220ms ease,
+                scale 220ms cubic-bezier(.2,.8,.2,1),
+                color 200ms ease;
+    will-change: transform;
+  }
+  /* Applied only briefly when the cursor releases from a frozen-on-link
+     state, so it can glide back to the mouse instead of teleporting. */
+  #cursor.releasing {
+    transition: transform 320ms cubic-bezier(.2,.8,.2,1),
+                opacity 220ms ease,
+                scale 220ms cubic-bezier(.2,.8,.2,1),
+                color 200ms ease;
+  }
+  #cursor svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  /* On link hover: only color changes. No scale, no motion of any kind. */
+  #cursor.hover svg path,
+  #cursor.hover svg line,
+  #cursor.hover svg polyline { stroke: var(--link-hover); }
+  #cursor.hover { color: var(--link-hover); }
+
+  @media (pointer: coarse) {
+    html, body, a { cursor: auto; }
+    #cursor { display: none; }
+  }
+
+  /* ---------- Meta strip ---------- */
+  .meta {
+    font-family: "Geist Mono", ui-monospace, "SF Mono", monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .meta .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    background: var(--link-hover);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: 1px;
+    box-shadow: 0 0 10px rgba(46, 91, 255, 0.5);
+  }
+
+  header {
+    position: fixed;
+    top: 24px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 5;
+    pointer-events: none;
+    gap: 16px;
+  }
+  header > * { pointer-events: auto; }
+  header .right { text-align: right; }
+
+  /* ---------- Layout ---------- */
+  main {
+    padding: 180px 7vw 100px;
+    max-width: 1640px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ---------- Type scale ---------- */
+  .greeting {
+    font-size: clamp(72px, 14vw, 230px);
+    font-weight: 800;
+    line-height: 0.88;
+    letter-spacing: -0.045em;
+    margin-bottom: 0.5em;
+  }
+
+  .lede {
+    font-size: clamp(30px, 3.6vw, 52px);
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    max-width: 22ch;
+    margin-bottom: 0.85em;
+  }
+  .lede.small {
+    font-size: clamp(24px, 2.8vw, 38px);
+    font-weight: 400;
+    line-height: 1.32;
+    letter-spacing: -0.01em;
+    max-width: 30ch;
+    color: var(--ink);
+  }
+
+  .thesis {
+    font-size: clamp(54px, 8vw, 128px);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    max-width: 16ch;
+    margin: 0.7em 0 1em;
+  }
+
+  .body p {
+    font-size: clamp(22px, 2.4vw, 34px);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: -0.012em;
+    max-width: 32ch;
+    margin-bottom: 1.1em;
+  }
+
+  .coda {
+    font-size: clamp(80px, 16vw, 260px);
+    font-weight: 800;
+    line-height: 0.88;
+    letter-spacing: -0.05em;
+    margin-top: 0.4em;
+    display: inline-block;
+  }
+  .coda .caret {
+    display: inline-block;
+    width: 0.06em;
+    height: 0.78em;
+    background: var(--ink);
+    margin-left: 0.06em;
+    vertical-align: -0.04em;
+    animation: blink 1.05s steps(2, start) infinite;
+  }
+  @keyframes blink { to { opacity: 0; } }
+
+  /* ---------- Links ---------- */
+  a {
+    color: var(--link);
+    text-decoration: underline;
+    text-decoration-thickness: 0.05em;
+    text-underline-offset: 0.14em;
+    text-decoration-skip-ink: auto;
+    font-style: normal;
+    transition: color 180ms ease;
+  }
+  a:hover {
+    color: var(--link-hover);
+    font-style: italic;
+  }
+  .thesis a, .greeting a, .coda a {
+    text-decoration-thickness: 0.035em;
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 140px;
+    padding: 28px 7vw 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--rule);
+    position: relative;
+    z-index: 2;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  footer .meta { color: var(--ink); }
+
+  /* ---------- Margin aside ---------- */
+  .aside {
+    position: absolute;
+    font-family: "Geist Mono", ui-monospace, "SF Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    max-width: 200px;
+    line-height: 1.55;
+  }
+  .aside-1 {
+    top: 22%;
+    right: 5vw;
+    transform: rotate(2deg);
+  }
+  .aside-1::before {
+    content: "↘";
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    transform: translateX(50px);
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Reveal on load ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: rise 900ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .reveal.d1 { animation-delay: 80ms; }
+  .reveal.d2 { animation-delay: 220ms; }
+  .reveal.d3 { animation-delay: 360ms; }
+  .reveal.d4 { animation-delay: 500ms; }
+  .reveal.d5 { animation-delay: 640ms; }
+  .reveal.d6 { animation-delay: 780ms; }
+  .reveal.d7 { animation-delay: 920ms; }
+  .reveal.d8 { animation-delay: 1100ms; }
+  .reveal.d9 { animation-delay: 1300ms; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { animation: none; opacity: 1; transform: none; }
+    .coda .caret { animation: none; }
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 720px) {
+    main { padding: 130px 6vw 80px; }
+    header { left: 18px; right: 18px; top: 18px; }
+    .aside { display: none; }
+    .greeting { letter-spacing: -0.035em; }
+    .body p, .lede { max-width: 100%; }
+    footer { padding: 22px 6vw 26px; }
+  }
+
+  /* ---------- Selection ---------- */
+  ::selection {
+    background: var(--link-hover);
+    color: var(--ink);
+  }
+
+  /* ---------- Light mode ---------- */
+  body.light-mode {
+    --bg: #F2EEE5;
+    --bg-2: #EAE6D9;
+    --ink: #0A0A09;
+    --ink-soft: rgba(10, 10, 9, 0.55);
+    --rule: rgba(10, 10, 9, 0.16);
+    --link: #0A0A09;
+    /* --link-hover stays the same blue — the constant across modes */
+  }
+  body.light-mode::before {
+    /* Invert the grain: black noise + multiply blend so it darkens
+       the cream bg the same way the white noise lifts the dark bg. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+  }
+
+  /* Smooth color/bg transition when toggling modes. Specific selectors
+     so it doesn't conflict with link hover transitions or cursor motion. */
+  body, header, footer, .meta, .greeting, .lede, .thesis, .coda, .body p, .aside, .lightbox-close {
+    transition: color 320ms ease, background-color 320ms ease, border-color 320ms ease;
+  }
+
+  /* ---------- Bouncing ball (also the light/dark toggle) ---------- */
+  #bouncing-ball {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--link-hover);
+    z-index: 1;                    /* behind text (z-index 2), above body bg */
+    transform: translate(-200px, -200px);
+    cursor: none;
+    will-change: transform;
+    transition: scale 240ms cubic-bezier(.2,.8,.2,1);
+    opacity: 0;
+    animation: ball-rise 700ms cubic-bezier(.2,.7,.2,1) 1400ms forwards;
+    box-shadow: 0 0 0 0 transparent;
+  }
+  #bouncing-ball:hover,
+  #bouncing-ball.mouse-over { scale: 1.08; }
+  #bouncing-ball:active,
+  #bouncing-ball.clicked { scale: 0.9; }
+  @keyframes ball-rise {
+    to { opacity: 1; }
+  }
+  @media (max-width: 720px) {
+    #bouncing-ball { width: 60px; height: 60px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #bouncing-ball { animation: none; opacity: 1; }
+  }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(10, 10, 9, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 280ms ease;
+  }
+  .lightbox.open {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  .lightbox-frame {
+    position: absolute;
+    inset: 28px;
+    background: #14140e;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    transform: scale(0.97);
+    transition: transform 320ms cubic-bezier(.2,.8,.2,1);
+  }
+  .lightbox.open .lightbox-frame {
+    transform: scale(1);
+  }
+  .lightbox-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: #14140e;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    background: var(--ink);
+    color: var(--bg);
+    border: 0;
+    border-radius: 999px;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 180ms ease, color 180ms ease;
+    cursor: none;
+  }
+  .lightbox-close:hover {
+    background: var(--link-hover);
+    color: var(--ink);
+  }
+  .lightbox-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  /* When the lightbox is open, surrender the custom cursor — the Figma
+     iframe captures mouse events and our cursor would otherwise freeze. */
+  body.lightbox-open, body.lightbox-open a, body.lightbox-open button { cursor: auto; }
+  body.lightbox-open #cursor { display: none; }
+  body.lightbox-open { overflow: hidden; }
+
+  @media (max-width: 720px) {
+    .lightbox-frame { inset: 12px; }
+    .lightbox-close { top: 16px; right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="meta reveal d1"><span class="dot"></span>Draft &nbsp;·&nbsp; v0.1</div>
+  <div class="meta right reveal d1">A note for Jack &nbsp;·&nbsp; Updating this weekend</div>
+</header>
+
+<main>
+
+  <h1 class="greeting reveal d2">Hey&nbsp;Jack.</h1>
+
+  <p class="lede reveal d3">Thank you for the opportunity.</p>
+
+  <p class="lede small reveal d4">My <a href="https://www.figma.com/proto/rkKztnrNcG0nagfIM5o4nF/Work-examples?node-id=5-4056&amp;viewport=528%2C1512%2C0.45&amp;t=91ENCOhlygyfKpgk-1&amp;scaling=min-zoom&amp;content-scaling=fixed&amp;page-id=5%3A3938" target="_blank" rel="noopener noreferrer" data-key="portfolio">portfolio</a> is still in progress. I&rsquo;m taking the weekend to finish it properly, but I wanted to send over a quick snapshot of the work in the meantime.</p>
+
+  <p class="thesis reveal d5">I help companies name what they&rsquo;re becoming, then build the story, systems, teams, and experiences to get there.</p>
+
+  <div class="body">
+
+    <p class="reveal d6">Recently, that has meant helping <a href="https://www.figma.com/proto/rkKztnrNcG0nagfIM5o4nF/Work-examples?node-id=5-4616&amp;viewport=25%2C140%2C0.47&amp;t=E4NH0G1iZvDqKovO-1&amp;scaling=contain&amp;content-scaling=fixed&amp;page-id=5%3A4614" target="_blank" rel="noopener noreferrer" data-key="crocs">Crocs</a> rethink its global storefront, working with <a href="https://www.figma.com/proto/rkKztnrNcG0nagfIM5o4nF/Work-examples?node-id=2-44417&amp;viewport=-140%2C-155%2C0.03&amp;t=Yy6C0rrX5X2ftriz-1&amp;scaling=scale-down-width&amp;content-scaling=fixed&amp;page-id=2%3A11685" target="_blank" rel="noopener noreferrer" data-key="salesforce-cco">Salesforce&rsquo;s CCO</a> on a brand vision for the agentic era, helping <a href="https://www.instrument.com/work/iru-launch" target="_blank" rel="noopener noreferrer" data-key="iru">Iru</a> expand from Kandji into a platform for endpoint, identity, and compliance, and partnering on a brand and UX foundation for <a href="https://www.figma.com/proto/rkKztnrNcG0nagfIM5o4nF/Work-examples?node-id=2-9565&amp;viewport=40%2C370%2C0.05&amp;t=osIL2HBWKkZq0Mu6-1&amp;scaling=contain&amp;content-scaling=fixed&amp;page-id=2%3A2717" target="_blank" rel="noopener noreferrer" data-key="erin-brockovich">Erin Brockovich</a>&rsquo;s next social advocacy platform.</p>
+
+    <p class="reveal d7">It has also meant helping Microsoft make <a href="https://www.figma.com/proto/rkKztnrNcG0nagfIM5o4nF/Work-examples?node-id=2-59&amp;viewport=40%2C366%2C0.05&amp;t=X3ljAtrblckyQ5dQ-1&amp;scaling=contain&amp;content-scaling=fixed&amp;page-id=0%3A1" target="_blank" rel="noopener noreferrer" data-key="word-excel-powerpoint">Word, Excel, and PowerPoint</a> feel useful to Gen&nbsp;Z again, leading strategy for <a href="https://www.figma.com/proto/rkKztnrNcG0nagfIM5o4nF/Work-examples?node-id=5-4609&amp;p=f&amp;viewport=25%2C140%2C0.47&amp;t=dzK8VReduNnlE9Sl-1&amp;scaling=contain&amp;content-scaling=fixed&amp;page-id=5%3A4608" target="_blank" rel="noopener noreferrer" data-key="att-flagship">AT&amp;T&rsquo;s digital flagship</a>, rebranding an agency that went on to win <a href="https://www.creativeboom.com/insight/how-raw-materials-won-dads-design-studio-of-the-year-by-being-unusual/" target="_blank" rel="noopener noreferrer" data-key="dnad">D&amp;AD Design Agency of the Year</a>, and leading a brand marketing team through the <a href="https://www.instrument.com/" target="_blank" rel="noopener noreferrer" data-key="growth-period">highest-growth period in its company&rsquo;s history</a>.</p>
+
+    <p class="reveal d8">Somewhere in there, I spoke at <a href="https://www.linkedin.com/posts/brianlarsonworking_canneslions-cannes2025-activity-7342231327397527552-MQTR" target="_blank" rel="noopener noreferrer" data-key="cannes">Cannes Lions</a> and <a href="https://schedule.sxsw.com/events/PP1162388" target="_blank" rel="noopener noreferrer" data-key="sxsw">SXSW</a>, helped bring 200+ Chicago youth together during <a href="https://hypebeast.com/2020/2/adidas-legacy-program-chicago-career-day-all-star-weekend-jonah-hill-ninja-james-harden-derrick-rose" target="_blank" rel="noopener noreferrer" data-key="nba-asw">NBA All-Star Weekend</a>, spent time brand-side helping sell <a href="https://www.clifbar.com/" target="_blank" rel="noopener noreferrer" data-key="clifbar">nutrition bars</a>, <a href="https://missionworkshop.com/" target="_blank" rel="noopener noreferrer" data-key="missionworkshop">outdoor performance gear</a>, and <a href="https://www.taylorstitch.com/" target="_blank" rel="noopener noreferrer" data-key="taylorstitch">men&rsquo;s fashion</a>, and once wrote about the origins of life as a <a href="https://pubmed.ncbi.nlm.nih.gov/25371268/" target="_blank" rel="noopener noreferrer" data-key="nasa">NASA fellowship awardee</a>, because apparently I have always been trying to understand how things become other things.</p>
+
+  </div>
+
+  <p class="coda reveal d9">Thank You!<span class="caret" aria-hidden="true"></span></p>
+
+  <div class="aside aside-1 reveal d8">
+    P.S. Underlines are live and link to examples of my work.
+  </div>
+
+</main>
+
+<footer>
+  <div class="meta">Brian Larson · Portland, Oregon</div>
+  <div class="meta">© 2026 · Full site dropping this weekend</div>
+</footer>
+
+<!-- Bouncing ball: ambient blue dot, click to toggle light mode -->
+<div id="bouncing-ball" role="button" aria-label="Toggle light mode" tabindex="0"></div>
+
+<!-- Lightbox for embedding Figma prototypes inline -->
+<div class="lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close preview" type="button">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <line x1="6" y1="6" x2="18" y2="18"/>
+      <line x1="18" y1="6" x2="6" y2="18"/>
+    </svg>
+  </button>
+  <div class="lightbox-frame">
+    <div class="lightbox-loading">Loading…</div>
+  </div>
+</div>
+
+<!-- Long-shaft arrow cursor: tip anchored at SVG coords (10,10) -->
+<div id="cursor" aria-hidden="true">
+  <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"
+       fill="none" stroke="currentColor"
+       stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="50" y1="50" x2="10" y2="10"/>
+    <polyline points="24,10 10,10 10,24"/>
+  </svg>
+</div>
+
+<script>
+(function(){
+  const cursor = document.getElementById('cursor');
+  if (!cursor) return;
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  // Arrow tip lives at SVG (10,10) within a 56×56 box.
+  const TIP_X = 10;
+  const TIP_Y = 10;
+  const RELEASE_MS = 340;
+
+  let visible = false;
+  let frozen = false;       // true while hovering a link
+  let mx = 0, my = 0;       // last known mouse position
+  let releaseTimer = null;
+
+  function setPos(x, y){
+    cursor.style.transform = `translate(${x - TIP_X}px, ${y - TIP_Y}px)`;
+  }
+
+  function show(){
+    if (!visible){
+      cursor.style.opacity = '1';
+      visible = true;
+    }
+  }
+
+  // No lerp, no rAF loop. Cursor sits exactly where the mouse is —
+  // every mousemove writes the new transform directly. The CSS rule
+  // has no transition on `transform`, so movement is 1:1 with the mouse.
+  function onMove(e){
+    mx = e.clientX;
+    my = e.clientY;
+    if (!frozen){
+      setPos(mx, my);
+      show();
+    }
+  }
+
+  window.addEventListener('mousemove', onMove, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    visible = false;
+  });
+  document.addEventListener('mouseenter', (e) => {
+    mx = e.clientX;
+    my = e.clientY;
+    setPos(mx, my);
+    show();
+  });
+
+  // Link interactions — color change only, no freeze. Cursor keeps
+  // following the mouse normally over links.
+  document.querySelectorAll('a').forEach(a => {
+    a.addEventListener('mouseenter', () => {
+      cursor.classList.add('hover');
+    });
+    a.addEventListener('mouseleave', () => {
+      cursor.classList.remove('hover');
+    });
+  });
+})();
+</script>
+
+<script>
+/* Lightbox: intercepts clicks on Figma links and embeds them inline.
+   Non-Figma links keep their target="_blank" behavior because most
+   external sites (LinkedIn, news outlets, gov sites, etc.) refuse to
+   load inside iframes via X-Frame-Options. */
+(function(){
+  const lightbox = document.querySelector('.lightbox');
+  if (!lightbox) return;
+  const frame = lightbox.querySelector('.lightbox-frame');
+  const loading = lightbox.querySelector('.lightbox-loading');
+  const closeBtn = lightbox.querySelector('.lightbox-close');
+
+  function isFigmaProto(url){
+    return /https?:\/\/(www\.)?figma\.com\/(proto|file|design|board)\//i.test(url);
+  }
+
+  function toEmbedUrl(url){
+    // Build a working Figma embed URL.
+    // Three things matter:
+    //   1. Host must be embed.figma.com
+    //   2. The `t=` share token must be REMOVED (it interferes with embeds)
+    //   3. embed-host must be "share"
+    try {
+      const u = new URL(url);
+      u.host = 'embed.figma.com';
+      u.searchParams.delete('t');
+      u.searchParams.set('embed-host', 'share');
+      return u.toString();
+    } catch {
+      return url;
+    }
+  }
+
+  function clearIframe(){
+    const old = frame.querySelector('iframe');
+    if (old) old.remove();
+  }
+
+  function openLightbox(url){
+    loading.style.display = 'flex';
+    // Recreate the iframe fresh every time. Reusing one with a swapped
+    // src can keep stale state and sometimes triggers Figma's "blocked"
+    // screen; a brand-new element loads cleanly.
+    clearIframe();
+    const iframe = document.createElement('iframe');
+    iframe.src = toEmbedUrl(url);
+    iframe.title = 'Work preview';
+    iframe.allow = 'fullscreen; clipboard-read; clipboard-write';
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.addEventListener('load', () => { loading.style.display = 'none'; }, { once: true });
+    frame.appendChild(iframe);
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lightbox-open');
+  }
+
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('lightbox-open');
+    setTimeout(clearIframe, 320);
+  }
+
+  closeBtn.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+  });
+
+  // Wire Figma links to the lightbox.
+  // CRITICAL: remove target="_blank" first. Some browsers (esp. Safari)
+  // begin the new-tab open before our click handler runs, racing past
+  // preventDefault and producing both a tab AND the lightbox.
+  document.querySelectorAll('a').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href && isFigmaProto(href)){
+      a.removeAttribute('target');
+      a.removeAttribute('rel');
+      a.addEventListener('click', (e) => {
+        // Modifier-clicks: let the browser open in a new tab as normal.
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openLightbox(a.href);
+      });
+    }
+  });
+})();
+</script>
+
+<script>
+/* Bouncing ball — ambient motion + click target for light/dark toggle.
+   The ball sits at z-index: 1, BEHIND the text (z-index: 2). Direct
+   :hover and click would normally never fire because <main> intercepts
+   the events. Instead, we attach handlers at the document level and
+   hit-test the click/move position against the ball's circle. This way
+   the ball stays visually in the background but is fully interactive,
+   and text selection in the manifesto continues to work. */
+(function(){
+  const ball = document.getElementById('bouncing-ball');
+  if (!ball) return;
+
+  // Random starting position (away from edges) and direction.
+  const SPEED = 1.2; // global multiplier — bump to make the ball faster
+  let bx = 80 + Math.random() * Math.max(window.innerWidth - 240, 100);
+  let by = 80 + Math.random() * Math.max(window.innerHeight - 240, 100);
+  let vx = (Math.random() > 0.5 ? 1 : -1) * (1.0 + Math.random() * 0.4) * SPEED;
+  let vy = (Math.random() > 0.5 ? 1 : -1) * (0.7 + Math.random() * 0.4) * SPEED;
+
+  function size(){ return ball.offsetWidth || 88; }
+
+  function tick(){
+    const s = size();
+    bx += vx;
+    by += vy;
+    if (bx < 0)                     { bx = 0;                         vx =  Math.abs(vx); }
+    if (by < 0)                     { by = 0;                         vy =  Math.abs(vy); }
+    if (bx + s > window.innerWidth) { bx = window.innerWidth  - s;    vx = -Math.abs(vx); }
+    if (by + s > window.innerHeight){ by = window.innerHeight - s;    vy = -Math.abs(vy); }
+    ball.style.transform = `translate(${bx}px, ${by}px)`;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  function toggle(){ document.body.classList.toggle('light-mode'); }
+
+  // Circular hit-test against the ball's current position.
+  function isOverBall(x, y){
+    const r = size() / 2;
+    const cx = bx + r;
+    const cy = by + r;
+    const dx = x - cx;
+    const dy = y - cy;
+    return dx*dx + dy*dy <= r*r;
+  }
+
+  // Click anywhere — if the position overlaps the ball, toggle modes.
+  // Skip when the click is on a link or button (preserve normal behavior),
+  // and skip when the lightbox is open (let it own its clicks).
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a, button')) return;
+    if (document.body.classList.contains('lightbox-open')) return;
+    if (isOverBall(e.clientX, e.clientY)){
+      toggle();
+      ball.classList.add('clicked');
+      setTimeout(() => ball.classList.remove('clicked'), 220);
+    }
+  });
+
+  // Visual hover feedback: scale up while the mouse is over the ball.
+  window.addEventListener('mousemove', (e) => {
+    ball.classList.toggle('mouse-over', isOverBall(e.clientX, e.clientY));
+  });
+
+  // Keyboard accessibility (when ball has focus via Tab).
+  ball.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      toggle();
+    }
+  });
+
+  // Keep the ball in bounds when the window resizes.
+  window.addEventListener('resize', () => {
+    const s = size();
+    bx = Math.min(Math.max(0, bx), window.innerWidth - s);
+    by = Math.min(Math.max(0, by), window.innerHeight - s);
+  });
+})();
+</script>
+
+</body>
+</html>
