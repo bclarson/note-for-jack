@@ -47,7 +47,7 @@
   }
 
   /* ---------- Custom cursor: long-shaft 1000%-style arrow ---------- */
-  html, body, a { cursor: none; }
+  *, *::before, *::after { cursor: none; }
   #cursor {
     position: fixed;
     top: 0; left: 0;
@@ -83,7 +83,7 @@
   #cursor.hover { color: var(--link-hover); }
 
   @media (pointer: coarse) {
-    html, body, a { cursor: auto; }
+    *, *::before, *::after { cursor: auto; }
     #cursor { display: none; }
   }
 
@@ -416,7 +416,7 @@
 
   /* When the lightbox is open, surrender the custom cursor — the Figma
      iframe captures mouse events and our cursor would otherwise freeze. */
-  body.lightbox-open, body.lightbox-open a, body.lightbox-open button { cursor: auto; }
+  body.lightbox-open, body.lightbox-open * { cursor: auto; }
   body.lightbox-open #cursor { display: none; }
   body.lightbox-open { overflow: hidden; }
 
